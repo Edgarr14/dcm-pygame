@@ -6,8 +6,8 @@ def main():
     pygame.init()
     clock = pygame.time.Clock()
 
-    # Inicializar el carro dentro del cajón de estacionamiento (x=4.0m, y=8.5m, mirando a la derecha)
-    model = CarPhysicsModel(start_x_m=4.0, start_y_m=8.5, start_angle_rad=0.0)
+   # iniciar con el carro estacionado
+    model = CarPhysicsModel(start_x_m=4.3, start_y_m=13.5, start_angle_rad=1.58)  # 90 grados en radianes
     ui = GameUI()
     won = False
 
@@ -15,7 +15,7 @@ def main():
     while running:
         dt = clock.tick(60) / 1000.0
 
-        # 1. Eventos discretos (Cerrar ventana, reiniciar y cambiar parámetros del modelo)
+        # cerrar, reinicar
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -23,18 +23,18 @@ def main():
                 if event.key == pygame.K_r:
                     model.reset()
                     won = False
-                # Modificar distancia entre ejes L (Requisito de rúbrica)
+                # modificar distancia entre ejes L
                 elif event.key == pygame.K_1:
                     model.wheelbase = max(1.8, round(model.wheelbase - 0.2, 2))
                 elif event.key == pygame.K_2:
                     model.wheelbase = min(4.2, round(model.wheelbase + 0.2, 2))
-                # Modificar coeficiente de fricción mu (Requisito de rúbrica)
+                # modificar coeficiente de fricción mu
                 elif event.key == pygame.K_3:
                     model.friction_coeff = max(0.1, round(model.friction_coeff - 0.1, 2))
                 elif event.key == pygame.K_4:
                     model.friction_coeff = min(1.2, round(model.friction_coeff + 0.1, 2))
 
-        # 2. Estado continuo del teclado para conducción suave
+        # conduccion suave con las flechas o WASD, freno con espacio
         keys = pygame.key.get_pressed()
         throttle = 0.0
         if keys[pygame.K_UP] or keys[pygame.K_w]:
@@ -54,10 +54,10 @@ def main():
             "brake": keys[pygame.K_SPACE]
         }
 
-        # 3. Actualizar física si aún no ha ganado
+        # actualizar si aun no ha ganado
         if not won:
             model.step(dt, controls, ui.obstacles)
-            # Comprobar si el centro del carro llegó a la zona de salida sin chocar
+            # comprobar si el centro del carro llego a la zona de salida sin chocar
             if not model.crashed and ui.exit_zone.collidepoint(model.get_center_pixels()):
                 won = True
                 model.velocity = 0.0
