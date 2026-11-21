@@ -1,6 +1,6 @@
 import pygame
 from physics_model import CarPhysicsModel
-from ui2 import GameUI
+from ui import GameUI
 
 def main():
     pygame.init()
